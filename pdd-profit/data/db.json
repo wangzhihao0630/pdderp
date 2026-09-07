@@ -1,0 +1,75 @@
+{
+  "settings": {
+    "siteName": "pdd利润计算器",
+    "slogan": "用平台的底层逻辑，算出你真实的每一分钱",
+    "announcement": {
+      "title": "📢 平台公告",
+      "content": "1、新用户注册即送 24 小时免费体验，注册后自动到账，无需领取。\n2、本工具按「净投产比」真实还原平台扣费逻辑，计算结果可直接用于选品定价决策。\n3、会员到期后计算功能将暂停使用，已保存的历史记录不受影响。\n4、充值请走站内收款码，付款后务必填写订单号，管理员确认后时长实时到账。",
+      "enabled": true,
+      "updatedAt": 1788804215968
+    },
+    "freeTrialHours": 24,
+    "plans": [
+      {
+        "id": "p1",
+        "name": "体验周卡",
+        "days": 7,
+        "price": 9.9,
+        "tag": "",
+        "sort": 1
+      },
+      {
+        "id": "p2",
+        "name": "月度会员",
+        "days": 30,
+        "price": 19.9,
+        "tag": "最受欢迎",
+        "sort": 2
+      },
+      {
+        "id": "p3",
+        "name": "季度会员",
+        "days": 90,
+        "price": 39.9,
+        "tag": "省 28 元",
+        "sort": 3
+      },
+      {
+        "id": "p4",
+        "name": "年度会员",
+        "days": 365,
+        "price": 59.9,
+        "tag": "折合 1.1 元/天",
+        "sort": 4
+      }
+    ],
+    "payment": {
+      "alipayQr": "",
+      "wechatQr": "",
+      "payee": "请在此填写收款方昵称",
+      "note": "① 选择套餐后扫码付款，金额务必与套餐价格一致\n② 付款后复制「订单号/交易单号」填入下方\n③ 管理员核对通过后，时长自动到账（一般 5 分钟内）",
+      "autoApprove": false,
+      "contact": "如超过 30 分钟未到账，请联系客服微信：your_wechat"
+    },
+    "admin": {
+      "username": "admin",
+      "salt": "eb4391032ac39a259fafb7e1af9ce21f",
+      "hash": "0e9b88fabe47d0eecafd9c66a06456503f1f2f053e032b96298bb710567bef5083ac1e1ba719d213a119a283de69599c34a9c78264d7dcabf23ff953264d186f",
+      "mustChangePwd": true
+    },
+    "stats": {
+      "visits": 0
+    }
+  },
+  "users": [],
+  "orders": [],
+  "calcLogs": [],
+  "sessions": {
+    "65eab07f96e7e34be4fd9bcdedfa2bbc416c908f754bd9d9": {
+      "type": "admin",
+      "uid": "admin",
+      "exp": 1791396007479,
+      "sid": "65eab07f96e7e34be4fd9bcdedfa2bbc416c908f754bd9d9"
+    }
+  }
+}

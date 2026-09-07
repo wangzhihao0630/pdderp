@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: pdd-profit
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/config
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATA_DIR
+        value: /app/data
+    disk:
+      name: pdd-data
+      mountPath: /app/data
+      sizeGB: 1

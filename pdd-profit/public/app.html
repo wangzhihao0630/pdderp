@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>利润计算 · 拼多多利润计算器</title>
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body data-nav="app">
+<div id="nav-root"></div>
+
+<div class="wrap">
+  <div class="section" style="padding-bottom:0">
+    <div class="card-hd" style="padding-left:0">
+      <h2 id="modeTitle">利润计算 · 无货源模式</h2>
+      <span class="sub">数据只用于本地测算，不会上传给第三方</span>
+    </div>
+    <div class="mode-tabs">
+      <button class="mode-tab on" data-mode="dropship">
+        <div class="t">① 无货源模式</div>
+        <div class="d">成本价 / 售价 / 净投产比 / 推广投入 / 退货率</div>
+      </button>
+      <button class="mode-tab" data-mode="warehouse">
+        <div class="t">② 仓储模式</div>
+        <div class="d">在无货源基础上增加邮费，自动算退货往返运费</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid g2" style="grid-template-columns:400px 1fr;align-items:start;padding-bottom:40px">
+    <!-- 输入 -->
+    <div class="card">
+      <div class="card-hd"><h3>输入参数</h3><span class="sub" id="expireTip"></span></div>
+      <div class="card-bd">
+        <div class="field">
+          <label class="label">成本价<span class="tip">商品进价（含包装）</span></label>
+          <div class="rel"><input class="input" id="cost" type="number" step="0.01" min="0" value="19"><span class="unit">元</span></div>
+        </div>
+        <div class="field">
+          <label class="label">售价<span class="tip">拼单价 / 到手价</span></label>
+          <div class="rel"><input class="input" id="price" type="number" step="0.01" min="0" value="39.9"><span class="unit">元</span></div>
+        </div>
+        <div class="field">
+          <label class="label">净投产比<span class="tip">平台后台显示值</span></label>
+          <input class="input" id="roi" type="number" step="0.01" min="0" value="3.2">
+        </div>
+        <div class="field">
+          <label class="label">推广预计投入<span class="tip">计划花费</span></label>
+          <div class="rel"><input class="input" id="adSpend" type="number" step="1" min="0" value="1000"><span class="unit">元</span></div>
+        </div>
+        <div class="field">
+          <label class="label">退货率<span class="tip">类目历史退货率</span></label>
+          <div class="rel"><input class="input" id="refundRate" type="number" step="0.1" min="0" max="99.9" value="12"><span class="unit">%</span></div>
+        </div>
+        <div class="field" id="shippingField">
+          <label class="label">邮费<span class="tip" id="shippingTip">单件发货运费</span></label>
+          <div class="rel"><input class="input" id="shipping" type="number" step="0.01" min="0" value="3"><span class="unit">元/件</span></div>
+        </div>
+
+        <details style="margin:6px 0 16px">
+          <summary class="small muted" style="cursor:pointer;padding:6px 0">高级选项（平台扣点 / 退回运费 / 退货损耗）</summary>
+          <div style="padding-top:10px">
+            <div class="field">
+              <label class="label">平台技术服务费<span class="tip">默认 0，常见 0.6%~5%</span></label>
+              <div class="rel"><input class="input" id="commission" type="number" step="0.1" min="0" value="0"><span class="unit">%</span></div>
+            </div>
+            <div class="field">
+              <label class="label">退回运费<span class="tip">留空则与邮费相同</span></label>
+              <div class="rel"><input class="input" id="returnShipping" type="number" step="0.01" min="0" placeholder="同邮费"><span class="unit">元/件</span></div>
+            </div>
+            <div class="field">
+              <label class="label">退货件成本损耗率<span class="tip">0=可二次销售，100=全损</span></label>
+              <div class="rel"><input class="input" id="refundLossRate" type="number" step="1" min="0" max="100" value="0"><span class="unit">%</span></div>
+            </div>
+          </div>
+        </details>
+
+        <button class="btn btn-primary btn-block" id="btnCalc">开始计算利润</button>
+        <div class="small muted" style="margin-top:10px;text-align:center">快捷键：Ctrl / ⌘ + Enter</div>
+      </div>
+    </div>
+
+    <!-- 结果 -->
+    <div>
+      <div class="card" id="emptyCard">
+        <div class="card-bd" style="text-align:center;padding:60px 20px;color:var(--ink-3)">
+          <div style="font-size:42px;margin-bottom:10px">📊</div>
+          <div>填写左侧参数后点击「开始计算利润」</div>
+          <div class="small" style="margin-top:6px">将得到：利润 / 利润率 / 成本构成 / 保本线 / 优化建议</div>
+        </div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-hd"><h3>测算结果</h3><span class="sub" id="resultMode"></span></div>
+          <div class="card-bd">
+            <div class="kpi">
+              <div class="kpi-item">
+                <div class="k">净利润</div>
+                <div class="v" id="kProfit">--</div>
+                <div class="x" id="kProfitX"></div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">净利率</div>
+                <div class="v" id="kRate">--</div>
+                <div class="bar" id="kRateBar"><i style="width:0"></i></div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">净成交额</div>
+                <div class="v" id="kGmv">--</div>
+                <div class="x" id="kGmvX"></div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">有效订单 / 下单数</div>
+                <div class="v" id="kOrders">--</div>
+                <div class="x" id="kOrdersX"></div>
+              </div>
+            </div>
+
+            <table class="tb">
+              <thead><tr><th>成本 / 收入项目</th><th style="text-align:right">金额</th><th style="text-align:right">占成交额</th><th style="text-align:right">说明</th></tr></thead>
+              <tbody id="costRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-hd"><h3>关键基准线</h3><span class="sub">反解出的临界值，直接拿去做决策</span></div>
+          <div class="card-bd">
+            <div class="kpi" style="grid-template-columns:repeat(4,1fr)">
+              <div class="kpi-item">
+                <div class="k">保本净投产比</div>
+                <div class="v" id="bRoi">--</div>
+                <div class="x">低于此值必亏</div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">保本售价</div>
+                <div class="v" id="bPrice">--</div>
+                <div class="x">低于此价必亏</div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">20% 净利率建议售价</div>
+                <div class="v" id="bTarget">--</div>
+                <div class="x">按当前投产比反推</div>
+              </div>
+              <div class="kpi-item">
+                <div class="k">单件净贡献</div>
+                <div class="v" id="bUnit">--</div>
+                <div class="x">扣完所有成本后</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd"><h3>优化建议</h3><span class="sub">可落地的动作清单</span></div>
+          <div class="card-bd" id="adviceList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script>
+let MODE = 'dropship';
+let USER = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  USER = await App.requireUser('/app.html');
+  if (!USER) return;
+
+  const tabs = document.querySelectorAll('.mode-tab');
+  tabs.forEach(t => t.onclick = () => {
+    tabs.forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    MODE = t.dataset.mode;
+    document.getElementById('modeTitle').textContent = '利润计算 · ' + (MODE === 'warehouse' ? '仓储模式' : '无货源模式');
+    const sf = document.getElementById('shippingField');
+    if (MODE === 'warehouse') {
+      sf.style.display = '';
+      document.getElementById('shippingTip').textContent = '单件发货运费（必填）';
+      document.getElementById('shipping').value = document.getElementById('shipping').value || 3;
+    } else {
+      sf.style.display = '';
+      document.getElementById('shippingTip').textContent = '代发运费，无则填 0';
+    }
+  });
+  document.getElementById('shippingTip').textContent = '代发运费，无则填 0';
+
+  if (USER) {
+    const left = USER.expireAt - Date.now();
+    document.getElementById('expireTip').textContent = left > 0
+      ? '剩余可用 ' + App.fmtDur(left) : '已到期，请先充值';
+  }
+
+  document.getElementById('btnCalc').onclick = calc;
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') calc();
+  });
+
+  if (location.hash === '#calc') calc();
+});
+
+async function calc() {
+  if (!USER) return;
+  if (USER.expireAt < Date.now()) {
+    App.toast('会员已到期，请先充值后使用', 'err');
+    setTimeout(() => location.href = '/recharge.html', 900);
+    return;
+  }
+  const btn = document.getElementById('btnCalc');
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = '计算中...';
+  try {
+    const body = {
+      mode: MODE,
+      cost: v('cost'), price: v('price'), roi: v('roi'),
+      adSpend: v('adSpend'), refundRate: v('refundRate'),
+      shipping: MODE === 'warehouse' ? v('shipping') : v('shipping'),
+      commission: v('commission'),
+      returnShipping: document.getElementById('returnShipping').value,
+      refundLossRate: v('refundLossRate')
+    };
+    const r = await App.post('/api/calc', body);
+    render(r.result);
+  } catch (e) {
+    App.toast(e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+}
+function v(id) { return document.getElementById(id).value; }
+
+function render(R) {
+  document.getElementById('emptyCard').style.display = 'none';
+  document.getElementById('result').classList.add('show');
+  document.getElementById('resultMode').textContent =
+    (R.mode === 'warehouse' ? '仓储模式' : '无货源模式') + ' · 推广投入 ' + App.money(R.input.P) + ' 元';
+
+  const s = R.summary, c = R.costs, u = R.perUnit, b = R.benchmark;
+  const pf = document.getElementById('kProfit');
+  pf.textContent = (s.profit >= 0 ? '+' : '-') + '¥' + App.money(Math.abs(s.profit));
+  pf.className = 'v ' + (s.profit >= 0 ? 'pos' : 'neg');
+  document.getElementById('kProfitX').textContent = '利润率 ' + s.profitRate.toFixed(2) + '%';
+
+  const rt = document.getElementById('kRate');
+  rt.textContent = s.profitRate.toFixed(2) + '%';
+  rt.className = 'v ' + (s.profitRate >= 0 ? 'pos' : 'neg');
+  const bar = document.getElementById('kRateBar');
+  bar.className = 'bar' + (s.profitRate < 0 ? ' neg' : '');
+  bar.querySelector('i').style.width = Math.min(Math.abs(s.profitRate), 100) + '%';
+
+  document.getElementById('kGmv').textContent = '¥' + App.money(s.gmv);
+  document.getElementById('kGmvX').textContent = '投产比 ' + R.input.R.toFixed(2);
+  document.getElementById('kOrders').textContent = App.int(s.validOrders);
+  document.getElementById('kOrdersX').textContent = '下单 ' + App.int(s.orders) + ' 单 / 退货 ' + App.int(s.returnOrders) + ' 单';
+
+  const rows = [
+    ['商品成本', c.goods, '有效单成本 + 退货件损耗'],
+    ['发货运费', c.shipping, R.input.F > 0 ? '单件 ' + R.input.F.toFixed(2) + ' 元 × 下单数' : '无货源代发未计运费'],
+    ['退货运费（往返）', c.returnShipping, '去程 + 退回 × 退货单量'],
+    ['平台扣点', c.platform, R.input.k > 0 ? '费率 ' + R.input.k.toFixed(2) + '%' : '未设置扣点'],
+    ['推广费', c.ad, '推广预计投入']
+  ];
+  document.getElementById('costRows').innerHTML = rows.map(r => `
+    <tr>
+      <td>${r[0]}</td>
+      <td class="num">¥${App.money(r[1])}</td>
+      <td class="num muted">${(r[1] / Math.max(s.gmv, 0.01) * 100).toFixed(2)}%</td>
+      <td class="num muted small">${r[2]}</td>
+    </tr>`).join('') + `
+    <tr style="background:#fafbfd">
+      <td><b>总成本</b></td>
+      <td class="num"><b>¥${App.money(s.totalCost)}</b></td>
+      <td class="num muted">${(s.totalCost / Math.max(s.gmv, 0.01) * 100).toFixed(2)}%</td>
+      <td class="num muted small">推广费占成交 ${s.adShare.toFixed(1)}%</td>
+    </tr>
+    <tr>
+      <td><b>净利润</b></td>
+      <td class="num"><b class="${s.profit >= 0 ? 'pos' : 'neg'}">¥${App.money(s.profit)}</b></td>
+      <td class="num muted">${s.profitRate.toFixed(2)}%</td>
+      <td class="num muted small">单件净贡献 ¥${u.net.toFixed(2)}</td>
+    </tr>`;
+
+  document.getElementById('bRoi').textContent = b.roiNeed ? b.roiNeed.toFixed(2) : '无解';
+  document.getElementById('bPrice').textContent = b.priceNeed ? '¥' + b.priceNeed.toFixed(2) : '无解';
+  document.getElementById('bTarget').textContent = b.priceForTarget ? '¥' + b.priceForTarget.toFixed(2) : '无解';
+  const un = document.getElementById('bUnit');
+  un.textContent = '¥' + u.net.toFixed(2);
+  un.className = 'v ' + (u.net >= 0 ? 'pos' : 'neg');
+
+  document.getElementById('adviceList').innerHTML = R.advice.map(a => `
+    <div class="advice ${a.level}">
+      <div class="t">${App.escapeHtml(a.title)}</div>
+      <div class="x">${App.escapeHtml(a.text)}</div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>

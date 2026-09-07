@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>后台管理 · 拼多多利润计算器</title>
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+<!-- 登录 -->
+<div id="loginWrap" style="display:none">
+  <div class="login-box">
+    <h2>后台管理登录</h2>
+    <div class="sub">初始账号 <code>admin</code>，初始密码 <code>admin888</code>，登录后请立即修改</div>
+    <form id="loginForm">
+      <div class="field">
+        <label class="label">管理员账号</label>
+        <input class="input" id="aUser" value="admin" required>
+      </div>
+      <div class="field">
+        <label class="label">密码</label>
+        <input class="input" id="aPwd" type="password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="aBtn">登 录</button>
+    </form>
+    <div class="small muted" style="text-align:center;margin-top:14px"><a href="/">← 返回前台</a></div>
+  </div>
+</div>
+
+<!-- 主体 -->
+<div id="mainWrap" style="display:none">
+  <div class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="/admin.html"><span class="logo-mark">⚙</span><span>后台管理</span></a>
+      <div class="nav-right">
+        <span class="nav-user" id="adminName"></span>
+        <a class="btn btn-ghost btn-sm" href="/" target="_blank">查看前台</a>
+        <button class="btn btn-ghost btn-sm" id="btnAdminLogout">退出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="section">
+      <div class="admin-tabs">
+        <button class="on" data-tab="overview">📊 数据概览</button>
+        <button data-tab="orders">🧾 充值订单<span id="pendingBadge" class="pill danger" style="margin-left:6px;display:none"></span></button>
+        <button data-tab="users">👥 用户管理</button>
+        <button data-tab="plans">💰 套餐定价</button>
+        <button data-tab="notice">📢 公告与站点</button>
+        <button data-tab="payment">💳 支付设置</button>
+        <button data-tab="security">🔐 账号安全</button>
+      </div>
+
+      <!-- 概览 -->
+      <div class="tab-pane" id="pane-overview">
+        <div class="grid g4" id="statBox" style="margin-bottom:18px"></div>
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-hd"><h3>近 7 日新增用户与收入</h3></div>
+            <div class="card-bd" id="day7"></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>最新注册用户</h3></div>
+            <div class="card-bd" style="padding:0">
+              <div class="table-wrap"><table class="tb">
+                <thead><tr><th>账号</th><th>注册时间</th><th>到期时间</th><th>状态</th></tr></thead>
+                <tbody id="recentUsers"></tbody>
+              </table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 订单 -->
+      <div class="tab-pane" id="pane-orders" style="display:none">
+        <div class="card">
+          <div class="card-hd">
+            <h3>充值订单核对</h3>
+            <select class="input" id="orderFilter" style="width:140px;padding:6px 10px">
+              <option value="pending">待核对</option>
+              <option value="approved">已通过</option>
+              <option value="rejected">已驳回</option>
+              <option value="all">全部</option>
+            </select>
+            <span class="sub">通过后系统自动为对应用户叠加时长</span>
+          </div>
+          <div class="card-bd" style="padding:0">
+            <div class="table-wrap"><table class="tb">
+              <thead><tr><th>用户</th><th>套餐</th><th>金额</th><th>方式</th><th>订单号</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead>
+              <tbody id="orderRows"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 用户 -->
+      <div class="tab-pane" id="pane-users" style="display:none">
+        <div class="card">
+          <div class="card-hd">
+            <h3>用户列表</h3>
+            <input class="input" id="userSearch" placeholder="搜索账号" style="width:200px;padding:7px 11px">
+            <button class="btn btn-ghost btn-sm" id="btnSearch">搜索</button>
+            <span class="sub" id="userCount"></span>
+          </div>
+          <div class="card-bd" style="padding:0">
+            <div class="table-wrap"><table class="tb">
+              <thead><tr><th>账号</th><th>注册时间</th><th>最后登录</th><th>有效期至</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="userRows"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 套餐 -->
+      <div class="tab-pane" id="pane-plans" style="display:none">
+        <div class="card">
+          <div class="card-hd"><h3>会员套餐与定价</h3><span class="sub">修改后前台实时生效</span></div>
+          <div class="card-bd">
+            <table class="tb" id="planTable">
+              <thead><tr><th>套餐名称</th><th>天数</th><th>价格(元)</th><th>角标</th><th>排序</th><th>操作</th></tr></thead>
+              <tbody id="planRows"></tbody>
+            </table>
+            <button class="btn btn-ghost btn-sm" id="btnAddPlan" style="margin-top:12px">+ 新增套餐</button>
+            <button class="btn btn-primary btn-sm" id="btnSavePlans" style="margin-top:12px">保存套餐设置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 公告 -->
+      <div class="tab-pane" id="pane-notice" style="display:none">
+        <div class="card">
+          <div class="card-hd"><h3>首页公告与站点信息</h3></div>
+          <div class="card-bd">
+            <div class="grid g2">
+              <div class="field"><label class="label">站点名称</label><input class="input" id="siteName"></div>
+              <div class="field"><label class="label">副标题 / Slogan</label><input class="input" id="slogan"></div>
+            </div>
+            <div class="field">
+              <label class="label">新用户免费时长<span class="tip">单位：小时，0 表示不赠送</span></label>
+              <input class="input" id="freeTrialHours" type="number" min="0" style="max-width:200px">
+            </div>
+            <div class="field"><label class="label">公告标题</label><input class="input" id="noticeTitle"></div>
+            <div class="field">
+              <label class="label">公告内容<span class="tip">支持换行，前台会原样展示</span></label>
+              <textarea class="input" id="noticeContent" style="min-height:200px"></textarea>
+            </div>
+            <label class="small" style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+              <input type="checkbox" id="noticeEnabled" style="width:16px;height:16px"> 前台显示该公告
+            </label>
+            <button class="btn btn-primary" id="btnSaveNotice">保存公告设置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 支付 -->
+      <div class="tab-pane" id="pane-payment" style="display:none">
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-hd"><h3>支付宝收款码</h3></div>
+            <div class="card-bd" style="text-align:center">
+              <div class="qr-box" id="aliBox">未上传</div>
+              <input type="file" id="aliFile" accept="image/*" style="display:none">
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('aliFile').click()">上传图片</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.__setQr('alipayQr','')">清除</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>微信收款码</h3></div>
+            <div class="card-bd" style="text-align:center">
+              <div class="qr-box" id="wxBox">未上传</div>
+              <input type="file" id="wxFile" accept="image/*" style="display:none">
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('wxFile').click()">上传图片</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.__setQr('wechatQr','')">清除</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-hd"><h3>收款信息与说明</h3></div>
+          <div class="card-bd">
+            <div class="field"><label class="label">收款方名称</label><input class="input" id="payee" placeholder="例如：张三 / XX工作室"></div>
+            <div class="field"><label class="label">支付说明<span class="tip">展示在充值页</span></label><textarea class="input" id="payNote"></textarea></div>
+            <div class="field"><label class="label">客服联系方式</label><input class="input" id="contact" placeholder="例如：如超时未到账请联系微信 xxx"></div>
+            <label class="small" style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+              <input type="checkbox" id="autoApprove" style="width:16px;height:16px"> 免审核模式（用户提交后立即自动加时长，有被骗风险）
+            </label>
+            <button class="btn btn-primary" id="btnSavePayment">保存支付设置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 安全 -->
+      <div class="tab-pane" id="pane-security" style="display:none">
+        <div class="card" style="max-width:520px">
+          <div class="card-hd"><h3>修改管理员密码</h3></div>
+          <div class="card-bd">
+            <div class="field"><label class="label">管理员账号</label><input class="input" id="newAdminUser"></div>
+            <div class="field"><label class="label">原密码</label><input class="input" id="oldPwd" type="password"></div>
+            <div class="field"><label class="label">新密码<span class="tip">至少 6 位</span></label><input class="input" id="newPwd" type="password"></div>
+            <div class="field"><label class="label">确认新密码</label><input class="input" id="newPwd2" type="password"></div>
+            <button class="btn btn-primary" id="btnSavePwd">保存修改</button>
+          </div>
+        </div>
+        <div class="card" style="max-width:520px;margin-top:16px">
+          <div class="card-hd"><h3>数据备份</h3><span class="sub">建议每周导出一次</span></div>
+          <div class="card-bd">
+            <div class="small muted">用户、订单、套餐、公告等全部数据保存在服务端 <code>data/db.json</code>。云托管请务必挂载持久卷，否则重启后数据丢失。</div>
+            <button class="btn btn-ghost btn-sm" id="btnExport" style="margin-top:12px">导出全量数据（JSON）</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/admin.js"></script>
+</body>
+</html>

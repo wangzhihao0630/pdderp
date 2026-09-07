@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>登录 · 拼多多利润计算器</title>
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+<div id="nav-root"></div>
+
+<div class="wrap">
+  <div class="login-box">
+    <h2>登录</h2>
+    <div class="sub">登录后使用利润计算器，新用户注册即送 24 小时</div>
+    <form id="form">
+      <div class="field">
+        <label class="label">账号</label>
+        <input class="input" id="username" placeholder="请输入账号" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label class="label">密码</label>
+        <input class="input" id="password" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="btn">登 录</button>
+    </form>
+    <div class="small muted" style="text-align:center;margin-top:16px">
+      还没有账号？<a href="/register.html" style="color:var(--brand);font-weight:600">立即注册</a>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script>
+const next = new URLSearchParams(location.search).get('next');
+document.getElementById('form').onsubmit = async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn');
+  btn.disabled = true; btn.textContent = '登录中...';
+  try {
+    await App.post('/api/login', {
+      username: document.getElementById('username').value.trim(),
+      password: document.getElementById('password').value
+    });
+    App.toast('登录成功', 'ok');
+    setTimeout(() => { location.href = next || '/app.html'; }, 400);
+  } catch (err) {
+    App.toast(err.message, 'err');
+    btn.disabled = false; btn.textContent = '登 录';
+  }
+};
+</script>
+</body>
+</html>

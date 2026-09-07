@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拼多多利润计算器 · 净投产比算清每一分钱</title>
+<meta name="description" content="按拼多多平台底层逻辑与净投产比，精准测算无货源/仓储模式的商品利润、利润率，并给出保本售价、保本投产比与优化建议。">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body data-nav="home">
+<div id="nav-root"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>用平台的底层逻辑<br>算清你每一单真实赚多少</h1>
+    <p id="heroSub">输入成本价、售价、净投产比、推广投入、退货率，秒出利润 / 利润率 / 保本线 / 优化建议。</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="/app.html" style="padding:12px 26px;font-size:15.5px">立即开始计算</a>
+      <a class="btn btn-ghost" href="/register.html" style="padding:12px 22px;font-size:15.5px">注册领 <span id="freeHours">24</span> 小时</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <!-- 公告 -->
+  <div class="section" style="padding-top:26px">
+    <div class="notice" id="noticeBox" style="display:none">
+      <div class="notice-hd"><span>📢</span><span id="noticeTitle">平台公告</span></div>
+      <div class="notice-bd" id="noticeContent"></div>
+      <div class="notice-ft" id="noticeTime"></div>
+    </div>
+  </div>
+
+  <!-- 两种模式 -->
+  <div class="section" style="padding-top:8px">
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-hd"><h2>① 无货源模式</h2><span class="sub">代发 / 一件代发</span></div>
+        <div class="card-bd">
+          <p class="small muted" style="margin-top:0">只需填 <b>成本价、售价、净投产比、推广预计投入、退货率</b>，系统自动扣除商品成本与退货损失，算出你在「不碰货」的情况下真实到手多少钱。</p>
+          <ul class="small" style="color:var(--ink-2);padding-left:18px;margin-bottom:0">
+            <li>适合：新手试水、多品类铺量测款</li>
+            <li>核心风险：上游涨价、售后时效、缺货</li>
+            <li>可额外填写代发运费，算得更准</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><h2>② 仓储模式</h2><span class="sub">自备库存 / 自己发货</span></div>
+        <div class="card-bd">
+          <p class="small muted" style="margin-top:0">在无货源基础上增加 <b>邮费</b>，并自动计算退货往返运费（去程 + 退回），把仓储模式最大的隐性成本摊开给你看。</p>
+          <ul class="small" style="color:var(--ink-2);padding-left:18px;margin-bottom:0">
+            <li>适合：已跑通单品、需要压成本提利润</li>
+            <li>核心风险：退货运费、快递价、库存周转</li>
+            <li>自动给出快递议价后的收益变化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 会员套餐 -->
+  <div class="section" style="padding-top:0">
+    <div class="card-hd" style="padding-left:0"><h2>会员套餐</h2><span class="sub">新用户注册即送 <span id="freeHours2">24</span> 小时免费体验</span></div>
+    <div class="grid g4" id="planList"></div>
+  </div>
+
+  <!-- 公式 -->
+  <div class="section" style="padding-top:0">
+    <div class="card">
+      <div class="card-hd"><h2>计算逻辑（公开透明）</h2><span class="sub">拒绝拍脑袋，全部可复核</span></div>
+      <div class="card-bd">
+        <div class="formula">
+          净投产比 <code>R</code> = 平台后台显示的成交投产比（<b>已扣除退款</b>）<br>
+          净成交额 <code>GMV = 推广投入 P × R</code>　→　有效订单 <code>Ne = GMV ÷ 售价 S</code><br>
+          下单总数 <code>N = Ne ÷ (1 − 退货率 r)</code>　→　退货订单 <code>Nr = N − Ne</code><br>
+          成本 = 商品成本 <code>Ne×C + Nr×C×损耗率</code> ＋ 发货运费 <code>N×F</code> ＋ 退货运费 <code>Nr×(F+Fb)</code> ＋ 平台扣点 <code>GMV×k</code> ＋ 推广费 <code>P</code><br>
+          <b>利润 = GMV − 总成本</b>　利润率 = 利润 ÷ GMV<br>
+          系统同时反解出：<code>保本投产比 = S ÷ U</code>、<code>保本售价</code>、<code>目标 20% 净利率的建议售价</code>
+        </div>
+        <p class="small muted" style="margin-bottom:0">说明：平台显示的净投产比口径为「推广带来的支付成交 ÷ 花费」，已扣除退款部分，因此本模型不再重复扣除退款金额，只计算退货带来的运费与商品损耗损失。高级选项中可自行调整平台扣点、退回运费与退货损耗率。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <div class="wrap">
+    <div>© <span id="year"></span> 拼多多利润计算器 · 计算结果仅供参考，请结合实际经营数据决策</div>
+    <div style="margin-top:6px"><a href="/admin.html" class="muted">后台管理</a></div>
+  </div>
+</div>
+
+<script src="/assets/js/common.js"></script>
+<script>
+window.onNavReady = function (cfg) {
+  if (cfg.announcement && cfg.announcement.enabled && cfg.announcement.content) {
+    document.getElementById('noticeBox').style.display = '';
+    document.getElementById('noticeTitle').textContent = cfg.announcement.title || '平台公告';
+    document.getElementById('noticeContent').textContent = cfg.announcement.content;
+    document.getElementById('noticeTime').textContent = cfg.announcement.updatedAt ? '更新于 ' + App.fmtTime(cfg.announcement.updatedAt) : '';
+  }
+  document.getElementById('freeHours').textContent = cfg.freeTrialHours || 24;
+  document.getElementById('freeHours2').textContent = cfg.freeTrialHours || 24;
+  document.title = cfg.siteName + ' · 净投产比算清每一分钱';
+  const list = (cfg.plans || []).map(p => `
+    <div class="plan" onclick="location.href='/recharge.html?plan=${p.id}'">
+      ${p.tag ? '<span class="tag">' + App.escapeHtml(p.tag) + '</span>' : ''}
+      <div class="n">${App.escapeHtml(p.name)}</div>
+      <div class="p"><small>¥</small>${p.price}</div>
+      <div class="d">${p.days} 天有效期</div>
+    </div>`).join('');
+  document.getElementById('planList').innerHTML = list;
+};
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
